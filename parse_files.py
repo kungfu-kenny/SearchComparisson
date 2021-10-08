@@ -159,6 +159,14 @@ class ProduceSearches:
             return value_dict
         soup = BeautifulSoup(value_html, 'html.parser')
         soup = soup.find_all('a')
+        if not soup:
+            try:
+                value_html = self.produce_html_text(value_link, self.headers_random)
+                return self.produce_parse_google([value_html, value_link])
+            except Exception as e:
+                print(e)
+                print('===========================================================')
+                return value_dict
         value_links = [f.get('href') for f in soup]
         value_names = [f.find('h3') for f in soup]
         value_links = [f for f, n in zip(value_links, value_names) if n]
@@ -169,6 +177,8 @@ class ProduceSearches:
                         for f in value_links]
         value_links = [f[index + 1] for f, index in zip(value_links, value_search)]
         value_links = [''.join(f.split('&')[:-1]) for f in value_links]
+        value_links = [f.replace("%3Fv%3D", '?v=') if 'https://www.youtube.com/watch' 
+                                    in f else f for f in value_links]
         value_dict['names'] = value_names
         value_dict['links'] = value_links
         return value_dict
@@ -208,6 +218,14 @@ class ProduceSearches:
         soup = soup.find('div', id='results')
         soup = soup.find('div', id='left')
         soup = soup.find('ol')
+        if not soup:
+            try:
+                value_html = self.produce_html_text(value_link, self.headers_random)
+                return self.produce_parse_yahoo([value_html, value_link])
+            except Exception as e:
+                print(e)
+                print('===========================================================')
+                return value_dict
         soup = soup.find_all('h3', class_='title tc')
         value_name = [f.find('a').text for f in soup]
         value_link_span = [f.find('span') for f in soup]
@@ -242,6 +260,14 @@ class ProduceSearches:
         soup = soup.find('div', id='b_content')
         soup = soup.find('ol', id='b_results')
         value_search = soup.find_all('li', class_='b_algo')
+        if not value_search:
+            try:
+                value_html = self.produce_html_text(value_link, self.headers_random)
+                return self.produce_parse_bing([value_html, value_link])
+            except Exception as e:
+                print(e)
+                print('===========================================================')
+                return value_dict
         value_title = [f.find('h2') for f in value_search]
         value_names = [f.text for f in value_title]
         value_links = [f.find('a').get('href', '') for f in value_title]
@@ -255,14 +281,14 @@ class ProduceSearches:
         Input:  None
         Output: list with values of the parsed search engines
         """
-        headers_random = {'user-agent': UserAgent().random,}
+        self.headers_random = {'user-agent': UserAgent().random,}
         links_google, links_qwant, links_bing, \
             links_duckduckgo, links_yahoo = self.links_search
-        value_google = [[rand, headers_random] for rand in links_google]
-        value_qwant = [[rand, headers_random] for rand in links_qwant]
-        value_bing = [[rand, headers_random] for rand in links_bing]
-        value_duckduckgo = [[rand, headers_random] for rand in links_duckduckgo]
-        value_yahoo = [[rand, headers_random] for rand in links_yahoo]
+        value_google = [[rand, self.headers_random] for rand in links_google]
+        value_qwant = [[rand, self.headers_random] for rand in links_qwant]
+        value_bing = [[rand, self.headers_random] for rand in links_bing]
+        value_duckduckgo = [[rand, self.headers_random] for rand in links_duckduckgo]
+        value_yahoo = [[rand, self.headers_random] for rand in links_yahoo]
         
         with Pool(5) as pool:
             value_html_google = pool.map(self.produce_html_text, value_google)
@@ -283,16 +309,7 @@ class ProduceSearches:
             value_dict_bing = pool.map(self.produce_parse_bing, value_bing)
             value_dict_duckduckgo = pool.map(self.produce_parse_duckduckgo, value_duckduckgo)
             value_dict_yahoo = pool.map(self.produce_parse_yahoo, value_yahoo)
-        pprint(value_dict_google)
-        print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-        pprint(value_dict_qwant)
-        print('.........................................................')
-        pprint(value_dict_bing)
-        print('zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz')
-        pprint(value_dict_duckduckgo)
-        print('ggggggggggggggggggggggggggggggggggggggggggggggggggggggggg')
-        pprint(value_dict_yahoo)
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        
         return value_dict_google, value_dict_qwant, value_dict_bing, \
                 value_dict_duckduckgo, value_dict_yahoo
         
