@@ -28,5 +28,5 @@ class LabFirst:
 
 
 if __name__ == '__main__':
-    a = LabFirst(['a$ap rocky', 'rihanna', 'tyler the creator', 'kendrick lamar', 'killer mike'])
+    a = LabFirst(['тестування'])#, 'rihanna', 'tyler the creator', 'kendrick lamar', 'killer mike'])
     a.produce_main()

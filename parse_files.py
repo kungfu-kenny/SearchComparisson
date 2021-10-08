@@ -173,9 +173,12 @@ class ProduceSearches:
         value_names = [f for f in value_names if f]
         value_names = [f.text for f in value_names if f]
         value_links = [f.split('=') for f in value_links]
-        value_search = [f.index('/url?q') if '/url?q' in f else f.index('U&url') 
-                        for f in value_links]
-        value_links = [f[index + 1] for f, index in zip(value_links, value_search)]
+        value_search = []
+        for link in value_links:
+            for i, search in enumerate(link[::-1]):
+                if 'url' in search:
+                    value_search.append(len(link) - i)
+        value_links = [f[index] for f, index in zip(value_links, value_search)]
         value_links = [''.join(f.split('&')[:-1]) for f in value_links]
         value_links = [f.replace("%3Fv%3D", '?v=') if 'https://www.youtube.com/watch' 
                                     in f else f for f in value_links]
