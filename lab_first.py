@@ -55,10 +55,59 @@ class LabFirst:
         """
         Method which is dedicated to return values of the aggregation
         Input:  None
-        Output: we created values of the 
+        Output: we created values of the modified board values which were further parsed
         """
         value_lists = list(zip(*self.search_list))
         return 
+
+    def make_aggregation_condorse(self) -> list:
+        """
+        Method which is dedicated to produce condorce aggregation of the values
+        Input:  None
+        Output: we created values of the condorse values which were further parsed
+        """
+        value_lists = list(zip(*self.search_list))
+        value_len = [[len(f.get('links', [])) for f in k] for k in value_lists]
+        value_len_max = [max(i) for i in value_len]
+        #TODO get values of the for to for the values
+        #TODO get values for it
+        pprint(value_lists[0])
+        print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+        pprint(value_len)
+        print('00000000000000000000000000000000000000000000000000000000')
+        print(value_len_max)
+        # pprint(self.search_links[0])
+        print('22222222222222222222222222222222222222222222222222222222222')
+        value_result = []
+        for value_list, link_list in zip(value_lists[:1], self.search_links[:1]):
+            value_list_presence = []
+            for value_links_dict in value_list:
+                value_links = value_links_dict.get('links', [])
+                value_link_presence = []
+                for value_link in link_list:
+                    if value_link in value_links:
+                        value_link_presence.append(value_links.index(value_link))
+                    else:
+                        value_link_presence.append(-1)
+                value_list_presence.append(value_link_presence) 
+            value_result.append(value_list_presence)
+        print(value_result)
+        value_presence = []
+        for value_searched_list, value_max in zip(value_result, value_len_max):
+            value_presence_artist = []
+            for value_artist_list in value_searched_list:
+                value_presence_link = []
+                for value_index in value_artist_list:
+                    if value_index >= 0:
+                        value_presence_link.append(value_max-value_index)
+                    else:
+                        value_presence_link.append(0)
+                value_presence_artist.append(value_presence_link)
+            value_presence.append(value_presence_artist)
+        print('######################################################################')
+        print(value_presence[0])
+        print('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+        return
 
     def produce_main(self) -> None:
         """
@@ -66,7 +115,8 @@ class LabFirst:
         Input:  All used values
         Output:
         """
-        self.make_aggregation_board()
+        # self.make_aggregation_board()
+        self.make_aggregation_condorse()
 
 
 if __name__ == '__main__':

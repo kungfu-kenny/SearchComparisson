@@ -2,11 +2,7 @@ import urllib
 import requests
 from pprint import pprint
 from bs4 import BeautifulSoup
-from urllib.parse import (urlencode,
-                         urlparse, 
-                         parse_qs)
 from multiprocessing import Pool
-from lxml.html import fromstring
 from fake_useragent import UserAgent
 
 class ProduceSearches:
