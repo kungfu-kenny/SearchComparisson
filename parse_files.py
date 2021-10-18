@@ -106,9 +106,10 @@ class ProduceSearches:
         return ''.join(['https://duckduckgo.com/html?'
                         f"q={value_search}&pretty=1&no_html=1&skip_disambig=1"])
         
-    def produce_html_text(self, value_list:set) -> str:
+    @staticmethod
+    def produce_html_text(value_list:set) -> str:
         """
-        Method which is dedicated to make the html 
+        Static Method which is dedicated to make the html 
         Input:  value_link = link to search
                 headers = value of the random headers
         Output: we returned text of the html
@@ -161,7 +162,7 @@ class ProduceSearches:
         soup = soup.find_all('a')
         if not soup:
             try:
-                value_html = self.produce_html_text(value_link, self.headers_random)
+                value_html = self.produce_html_text([value_link, self.headers_random])
                 return self.produce_parse_google([value_html, value_link])
             except Exception as e:
                 print(e)
@@ -223,7 +224,7 @@ class ProduceSearches:
         soup = soup.find('ol')
         if not soup:
             try:
-                value_html = self.produce_html_text(value_link, self.headers_random)
+                value_html = self.produce_html_text([value_link, self.headers_random])
                 return self.produce_parse_yahoo([value_html, value_link])
             except Exception as e:
                 print(e)
@@ -265,7 +266,7 @@ class ProduceSearches:
         value_search = soup.find_all('li', class_='b_algo')
         if not value_search:
             try:
-                value_html = self.produce_html_text(value_link, self.headers_random)
+                value_html = self.produce_html_text([value_link, self.headers_random])
                 return self.produce_parse_bing([value_html, value_link])
             except Exception as e:
                 print(e)
