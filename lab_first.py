@@ -10,7 +10,7 @@ class LabFirst:
     """
     def __init__(self, value_list:list) -> None:
         self.inserted_list = value_list
-        self.x_1, self.x_2, self.outer_mark = 0.44, 0.47, 0.64
+        self.x_1, self.x_2, self.outer_mark = 0.44, 0.56, 0.64
         self.objective_mark, self.self_mark = 0.5, 0.75
         self.search = ProduceSearches(self.inserted_list)
         self.search_list = self.produce_additional_sorting(
