@@ -1,3 +1,4 @@
+import time
 import urllib
 import requests
 from pprint import pprint
@@ -166,6 +167,15 @@ class ProduceSearches:
                 return value_dict
         value_links = [f.get('href') for f in soup]
         value_names = [f.find('h3') for f in soup]
+        if not any(value_names):
+            try:
+                time.sleep(1)
+                value_html = self.produce_html_text([value_link, self.headers_random])
+                return self.produce_parse_google([value_html, value_link])
+            except Exception as e:
+                print(e)
+                print('===========================================================')
+                return value_dict
         value_links = [f for f, n in zip(value_links, value_names) if n]
         value_names = [f for f in value_names if f]
         value_names = [f.text for f in value_names if f]
@@ -199,6 +209,9 @@ class ProduceSearches:
         soup = soup.find_all('h2')
         value_name = [f.text.strip() for f in soup]
         value_link = [f.find('a').get('href', '') for f in soup]
+        if '//duckduckgo.com/l/?uddg=' in value_link[0]:
+            value_link = [urllib.parse.urlparse(f) for f in value_link]
+            value_link = [urllib.parse.parse_qs(f.query).get('uddg', '')[0] for f in value_link]
         value_dict['names'] = value_name
         value_dict['links'] = value_link
         return value_dict
@@ -218,6 +231,7 @@ class ProduceSearches:
         soup = soup.find('div', id='results')
         soup = soup.find('div', id='left')
         soup = soup.find('ol')
+        soup = soup.find_all('h3', class_='title')
         if not soup:
             try:
                 value_html = self.produce_html_text([value_link, self.headers_random])
@@ -226,8 +240,16 @@ class ProduceSearches:
                 print(e)
                 print('===========================================================')
                 return value_dict
-        soup = soup.find_all('h3', class_='title tc')
-        value_name = [f.find('a').text for f in soup]
+        value_name = [f.find('a') for f in soup]
+        if not any(value_name):
+            try:
+                value_html = self.produce_html_text([value_link, self.headers_random])
+                return self.produce_parse_yahoo([value_html, value_link])
+            except Exception as e:
+                print(e)
+                print('===========================================================')
+                return value_dict    
+        value_name = [f.text for f in value_name]
         value_link_span = [f.find('span') for f in soup]
         value_between_link = [f.find('span') for f in value_link_span]
         value_between_link = [f.text if f else '' for f in value_between_link]
@@ -239,7 +261,7 @@ class ProduceSearches:
                         for f, b in zip(value_names, value_between_link)]
         value_links = [f.get('href') for f in [f.find('a') for f in soup]]
         value_links = [f.split('/') for f in value_links]
-        value_links = [f[7].split('=')[1] for f in value_links]
+        value_links = [f[7].split('=')[1] if len(f) > 6 else '' for f in value_links]
         value_links = [urllib.parse.unquote(f) for f in value_links]
         value_dict['names'] = value_names
         value_dict['links'] = value_links
